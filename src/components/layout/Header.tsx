@@ -35,19 +35,29 @@ const Header = () => {
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-8">
-            <Link to="/" className="font-medium text-muted-foreground hover:text-primary transition-colors">
-              {t('nav.home')}
-            </Link>
-            <Link to="/shop" className="font-medium text-muted-foreground hover:text-primary transition-colors">
-              {t('nav.shop')}
-            </Link>
-            <Link to="/about" className="font-medium text-muted-foreground hover:text-primary transition-colors">
-              {t('nav.about')}
-            </Link>
-            <Link to="/contact" className="font-medium text-muted-foreground hover:text-primary transition-colors">
-              {t('nav.contact')}
-            </Link>
+          <nav className="hidden md:flex">
+            <ul className={`flex ${language === 'ar' ? 'space-x-reverse space-x-8' : 'space-x-8'}`}>
+              <li>
+                <Link to="/" className="font-medium text-muted-foreground hover:text-primary transition-colors px-1">
+                  {t('nav.home')}
+                </Link>
+              </li>
+              <li>
+                <Link to="/shop" className="font-medium text-muted-foreground hover:text-primary transition-colors px-1">
+                  {t('nav.shop')}
+                </Link>
+              </li>
+              <li>
+                <Link to="/about" className="font-medium text-muted-foreground hover:text-primary transition-colors px-1">
+                  {t('nav.about')}
+                </Link>
+              </li>
+              <li>
+                <Link to="/contact" className="font-medium text-muted-foreground hover:text-primary transition-colors px-1">
+                  {t('nav.contact')}
+                </Link>
+              </li>
+            </ul>
           </nav>
 
           {/* Actions */}
@@ -128,51 +138,65 @@ const Header = () => {
       {/* Mobile Navigation */}
       {isMenuOpen && (
         <div className="md:hidden bg-background border-t border-border animate-fade-in">
-          <div className="container-custom py-4 space-y-2">
-            <Link 
-              to="/" 
-              className="block py-2 font-medium text-foreground hover:text-primary transition-colors"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              {t('nav.home')}
-            </Link>
-            <Link 
-              to="/shop" 
-              className="block py-2 font-medium text-foreground hover:text-primary transition-colors"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              {t('nav.shop')}
-            </Link>
-            <Link 
-              to="/about" 
-              className="block py-2 font-medium text-foreground hover:text-primary transition-colors"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              {t('nav.about')}
-            </Link>
-            <Link 
-              to="/contact" 
-              className="block py-2 font-medium text-foreground hover:text-primary transition-colors"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              {t('nav.contact')}
-            </Link>
-            <div className="pt-2 border-t border-border">
-              <Link 
-                to="/login" 
-                className="block py-2 font-medium text-foreground hover:text-primary transition-colors"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                {t('nav.login')}
-              </Link>
-              <Link 
-                to="/signup" 
-                className="block py-2 font-medium text-foreground hover:text-primary transition-colors"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                {t('nav.signup')}
-              </Link>
-            </div>
+          <div className="container-custom py-4">
+            <ul className={`${language === 'ar' ? 'space-y-4 text-right' : 'space-y-4'}`}>
+              <li>
+                <Link 
+                  to="/" 
+                  className="block py-2 font-medium text-foreground hover:text-primary transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {t('nav.home')}
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  to="/shop" 
+                  className="block py-2 font-medium text-foreground hover:text-primary transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {t('nav.shop')}
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  to="/about" 
+                  className="block py-2 font-medium text-foreground hover:text-primary transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {t('nav.about')}
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  to="/contact" 
+                  className="block py-2 font-medium text-foreground hover:text-primary transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {t('nav.contact')}
+                </Link>
+              </li>
+              <div className="pt-2 border-t border-border">
+                <li>
+                  <Link 
+                    to="/login" 
+                    className="block py-2 font-medium text-foreground hover:text-primary transition-colors"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {t('nav.login')}
+                  </Link>
+                </li>
+                <li>
+                  <Link 
+                    to="/signup" 
+                    className="block py-2 font-medium text-foreground hover:text-primary transition-colors"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {t('nav.signup')}
+                  </Link>
+                </li>
+              </div>
+            </ul>
           </div>
         </div>
       )}
