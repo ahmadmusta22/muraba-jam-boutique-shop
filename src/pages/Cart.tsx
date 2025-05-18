@@ -7,13 +7,29 @@ import { useCart } from '@/contexts/CartContext';
 import { X, Plus, Minus, ShoppingBag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { LocalizedProduct } from '@/data/products';
 
 const Cart = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { items, removeItem, updateQuantity, subtotal, tax, shipping, total } = useCart();
 
   const handleQuantityChange = (productId: string, currentQuantity: number, change: number) => {
     updateQuantity(productId, currentQuantity + change);
+  };
+
+  // Function to get localized text
+  const getLocalizedText = (product: any, field: 'name' | 'category') => {
+    const localizedProduct = product as LocalizedProduct;
+    
+    if (field === 'name' && localizedProduct.nameTranslations) {
+      return localizedProduct.nameTranslations[language] || product.name;
+    }
+    
+    if (field === 'category' && localizedProduct.categoryTranslations) {
+      return localizedProduct.categoryTranslations[language] || product.category;
+    }
+    
+    return product[field];
   };
 
   return (
@@ -28,7 +44,7 @@ const Cart = () => {
             <ShoppingBag size={64} className="mx-auto text-muted-foreground mb-4" />
             <h2 className="text-2xl font-medium mb-4">{t('cart.empty')}</h2>
             <p className="text-muted-foreground mb-6">
-              Your shopping cart is empty. Add some products to your cart.
+              {t('cart.emptyMessage')}
             </p>
             <Link to="/shop">
               <Button size="lg">{t('cart.continue')}</Button>
@@ -42,9 +58,9 @@ const Cart = () => {
                 <table className="w-full">
                   <thead className="bg-muted">
                     <tr>
-                      <th className="text-left p-4">Product</th>
-                      <th className="text-center p-4">Quantity</th>
-                      <th className="text-right p-4">Price</th>
+                      <th className="text-left p-4">{t('product.title')}</th>
+                      <th className="text-center p-4">{t('checkout.quantity')}</th>
+                      <th className="text-right p-4">{t('product.price')}</th>
                       <th className="p-4 w-10"></th>
                     </tr>
                   </thead>
@@ -56,13 +72,13 @@ const Cart = () => {
                             <div className="w-16 h-16 flex-shrink-0 bg-muted rounded overflow-hidden mr-4">
                               <img 
                                 src={item.product.image} 
-                                alt={item.product.name} 
+                                alt={getLocalizedText(item.product, 'name')} 
                                 className="w-full h-full object-cover"
                               />
                             </div>
                             <div>
-                              <h3 className="font-medium">{item.product.name}</h3>
-                              <p className="text-sm text-muted-foreground">{item.product.category}</p>
+                              <h3 className="font-medium">{getLocalizedText(item.product, 'name')}</h3>
+                              <p className="text-sm text-muted-foreground">{getLocalizedText(item.product, 'category')}</p>
                             </div>
                           </div>
                         </td>
@@ -92,7 +108,7 @@ const Cart = () => {
                           <button 
                             onClick={() => removeItem(item.product.id)}
                             className="text-muted-foreground hover:text-destructive"
-                            aria-label="Remove item"
+                            aria-label={t('cart.remove')}
                           >
                             <X size={18} />
                           </button>

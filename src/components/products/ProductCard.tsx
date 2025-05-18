@@ -7,20 +7,40 @@ import { Product } from '@/contexts/CartContext';
 import { ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/sonner';
+import { LocalizedProduct } from '@/data/products';
 
 interface ProductCardProps {
-  product: Product;
+  product: Product | LocalizedProduct;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { addItem } = useCart();
+
+  // Function to get localized text
+  const getLocalizedText = (field: 'name' | 'category' | 'description') => {
+    const localizedProduct = product as LocalizedProduct;
+    
+    if (field === 'name' && localizedProduct.nameTranslations) {
+      return localizedProduct.nameTranslations[language] || product.name;
+    }
+    
+    if (field === 'category' && localizedProduct.categoryTranslations) {
+      return localizedProduct.categoryTranslations[language] || product.category;
+    }
+    
+    if (field === 'description' && localizedProduct.descriptionTranslations) {
+      return localizedProduct.descriptionTranslations[language] || product.description;
+    }
+    
+    return product[field];
+  };
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     addItem(product, 1);
-    toast.success(`${product.name} added to cart!`);
+    toast.success(`${getLocalizedText('name')} ${t('product.addedToCart')}`);
   };
 
   return (
@@ -29,7 +49,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <div className="relative pt-[100%] overflow-hidden bg-muted">
           <img 
             src={product.image} 
-            alt={product.name}
+            alt={getLocalizedText('name')}
             className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
           <div className="absolute top-2 right-2">
@@ -47,16 +67,16 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         
         <div className="p-4">
           <div className="text-xs text-muted-foreground uppercase mb-1">
-            {product.category}
+            {getLocalizedText('category')}
           </div>
-          <h3 className="font-medium text-lg mb-1 line-clamp-1">{product.name}</h3>
+          <h3 className="font-medium text-lg mb-1 line-clamp-1">{getLocalizedText('name')}</h3>
           <div className="flex justify-between items-center mt-2">
             <span className="font-semibold">{product.price.toFixed(2)} TND</span>
             {product.stock <= 0 ? (
               <span className="text-xs text-destructive font-medium">{t('product.outOfStock')}</span>
             ) : (
               <span className="text-xs text-muted-foreground">
-                {product.stock < 5 ? `Only ${product.stock} left` : 'In Stock'}
+                {product.stock < 5 ? `${t('product.onlyLeft', { count: product.stock })}` : t('product.inStock')}
               </span>
             )}
           </div>

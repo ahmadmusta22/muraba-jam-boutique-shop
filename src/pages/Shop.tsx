@@ -41,7 +41,7 @@ const Shop = () => {
               <ProductGrid products={products} />
             ) : (
               <div className="text-center py-12">
-                <p className="text-muted-foreground">No products found in this category.</p>
+                <p className="text-muted-foreground">{t('product.noProductsFound')}</p>
               </div>
             )}
           </div>

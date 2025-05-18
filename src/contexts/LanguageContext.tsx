@@ -5,7 +5,7 @@ type Language = 'en' | 'fr' | 'ar';
 interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
-  t: (key: string) => string;
+  t: (key: string, params?: Record<string, any>) => string;
   dir: "ltr" | "rtl";
 }
 
@@ -41,6 +41,7 @@ const translations: Record<Language, Record<string, string>> = {
     'product.details': 'Details',
     'product.ingredients': 'Ingredients',
     'product.addToCart': 'Add to Cart',
+    'product.addedToCart': 'added to cart!',
     'product.buyNow': 'Buy Now',
     'product.outOfStock': 'Out of Stock',
     'product.filter': 'Filter',
@@ -49,11 +50,19 @@ const translations: Record<Language, Record<string, string>> = {
     'product.price': 'Price',
     'product.category': 'Category',
     'product.related': 'You may also like',
+    'product.quantity': 'Quantity',
+    'product.inStock': 'In Stock',
+    'product.onlyLeft': 'Only {{count}} left',
+    'product.noProductsFound': 'No products found in this category.',
+    'product.notFound': 'Product not found',
+    'product.title': 'Product',
+    'cart.emptyMessage': 'Your shopping cart is empty. Add some products to your cart.',
     
     // Categories
-    'category.fruit': 'Fruit-based',
+    'category.fruit-based': 'Fruit-based',
     'category.sugar-free': 'Sugar-free',
     'category.organic': 'Organic',
+    'category.premium': 'Premium',
     'category.all': 'All Products',
     
     // Cart
@@ -162,6 +171,7 @@ const translations: Record<Language, Record<string, string>> = {
     'product.details': 'Détails',
     'product.ingredients': 'Ingrédients',
     'product.addToCart': 'Ajouter au Panier',
+    'product.addedToCart': 'ajouté au panier !',
     'product.buyNow': 'Acheter Maintenant',
     'product.outOfStock': 'Rupture de Stock',
     'product.filter': 'Filtrer',
@@ -170,11 +180,19 @@ const translations: Record<Language, Record<string, string>> = {
     'product.price': 'Prix',
     'product.category': 'Catégorie',
     'product.related': 'Vous pourriez aussi aimer',
+    'product.quantity': 'Quantité',
+    'product.inStock': 'En Stock',
+    'product.onlyLeft': 'Plus que {{count}} en stock',
+    'product.noProductsFound': 'Aucun produit trouvé dans cette catégorie.',
+    'product.notFound': 'Produit non trouvé',
+    'product.title': 'Produit',
+    'cart.emptyMessage': 'Votre panier est vide. Ajoutez des produits à votre panier.',
     
     // Categories
-    'category.fruit': 'À base de fruits',
+    'category.fruit-based': 'À base de fruits',
     'category.sugar-free': 'Sans sucre',
     'category.organic': 'Biologique',
+    'category.premium': 'Premium',
     'category.all': 'Tous les Produits',
     
     // Cart
@@ -283,6 +301,7 @@ const translations: Record<Language, Record<string, string>> = {
     'product.details': 'التفاصيل',
     'product.ingredients': 'المكونات',
     'product.addToCart': 'أضف إلى السلة',
+    'product.addedToCart': 'تمت إضافته إلى السلة!',
     'product.buyNow': 'اشتر الآن',
     'product.outOfStock': 'نفذ من المخزون',
     'product.filter': 'تصفية',
@@ -291,11 +310,19 @@ const translations: Record<Language, Record<string, string>> = {
     'product.price': 'السعر',
     'product.category': 'الفئة',
     'product.related': 'قد يعجبك أيضا',
+    'product.quantity': 'الكمية',
+    'product.inStock': 'متوفر',
+    'product.onlyLeft': 'بقي {{count}} فقط',
+    'product.noProductsFound': 'لا توجد منتجات في هذه الفئة.',
+    'product.notFound': 'المنتج غير موجود',
+    'product.title': 'المنتج',
+    'cart.emptyMessage': 'سلة التسوق الخاصة بك فارغة. أضف بعض المنتجات إلى سلتك.',
     
     // Categories
-    'category.fruit': 'مربى الفواكه',
+    'category.fruit-based': 'مربى الفواكه',
     'category.sugar-free': 'خالي من السكر',
     'category.organic': 'عضوي',
+    'category.premium': 'فاخر',
     'category.all': 'جميع المنتجات',
     
     // Cart
@@ -389,8 +416,17 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
     document.documentElement.lang = lang;
   };
 
-  const translate = (key: string): string => {
-    return translations[language][key] || key;
+  const translate = (key: string, params?: Record<string, any>): string => {
+    let text = translations[language][key] || key;
+    
+    // Handle parameter replacement if provided
+    if (params) {
+      Object.entries(params).forEach(([paramKey, paramValue]) => {
+        text = text.replace(new RegExp(`{{${paramKey}}}`, 'g'), paramValue.toString());
+      });
+    }
+    
+    return text;
   };
 
   const value = {

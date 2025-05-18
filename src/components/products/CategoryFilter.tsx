@@ -25,9 +25,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({ selected, onChange }) =
                 : 'bg-muted hover:bg-muted/80 text-foreground'
             }`}
           >
-            {t(`category.${category.id}`) !== `category.${category.id}` 
-              ? t(`category.${category.id}`) 
-              : category.name}
+            {t(`category.${category.id}`)}
           </button>
         ))}
       </div>

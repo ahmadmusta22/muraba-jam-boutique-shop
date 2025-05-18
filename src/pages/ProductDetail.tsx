@@ -10,10 +10,11 @@ import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/sonner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProductGrid from '@/components/products/ProductGrid';
+import { LocalizedProduct } from '@/data/products';
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const { t, dir } = useLanguage();
+  const { t, dir, language } = useLanguage();
   const { addItem } = useCart();
   const [product, setProduct] = useState(id ? getProductById(id) : null);
   const [quantity, setQuantity] = useState(1);
@@ -42,15 +43,40 @@ const ProductDetail = () => {
   const handleAddToCart = () => {
     if (product) {
       addItem(product, quantity);
-      toast.success(`${quantity} × ${product.name} added to cart!`);
+      toast.success(`${quantity} × ${getLocalizedText('name')} ${t('product.addedToCart')}`);
     }
+  };
+
+  // Function to get localized text
+  const getLocalizedText = (field: 'name' | 'category' | 'description' | 'ingredients') => {
+    if (!product) return '';
+    
+    const localizedProduct = product as LocalizedProduct;
+    
+    if (field === 'name' && localizedProduct.nameTranslations) {
+      return localizedProduct.nameTranslations[language] || product.name;
+    }
+    
+    if (field === 'category' && localizedProduct.categoryTranslations) {
+      return localizedProduct.categoryTranslations[language] || product.category;
+    }
+    
+    if (field === 'description' && localizedProduct.descriptionTranslations) {
+      return localizedProduct.descriptionTranslations[language] || product.description;
+    }
+    
+    if (field === 'ingredients' && localizedProduct.ingredientsTranslations) {
+      return localizedProduct.ingredientsTranslations[language] || product.ingredients;
+    }
+    
+    return product[field];
   };
 
   if (!product) {
     return (
       <Layout>
         <div className="container-custom py-12 text-center">
-          <p className="text-lg text-muted-foreground">Product not found</p>
+          <p className="text-lg text-muted-foreground">{t('product.notFound')}</p>
           <Link to="/shop" className="text-primary hover:underline mt-4 inline-block">
             {t('cart.continue')}
           </Link>
@@ -79,7 +105,7 @@ const ProductDetail = () => {
             <div className="aspect-square relative">
               <img 
                 src={product.image} 
-                alt={product.name}
+                alt={getLocalizedText('name')}
                 className="w-full h-full object-cover"
               />
             </div>
@@ -88,11 +114,11 @@ const ProductDetail = () => {
           {/* Product Info */}
           <div>
             <h1 className="text-3xl font-serif font-semibold mb-2">
-              {product.name}
+              {getLocalizedText('name')}
             </h1>
             
             <div className="text-sm text-muted-foreground uppercase mb-4">
-              {product.category}
+              {getLocalizedText('category')}
             </div>
             
             <div className="text-2xl font-semibold mb-6">
@@ -100,7 +126,7 @@ const ProductDetail = () => {
             </div>
             
             <p className="text-muted-foreground mb-8">
-              {product.description}
+              {getLocalizedText('description')}
             </p>
             
             {/* Quantity selector */}
@@ -130,9 +156,9 @@ const ProductDetail = () => {
               {product.stock > 0 ? (
                 <span className="text-sm">
                   {product.stock < 5 ? (
-                    <span className="text-yellow-600">Only {product.stock} left in stock</span>
+                    <span className="text-yellow-600">{t('product.onlyLeft', { count: product.stock })}</span>
                   ) : (
-                    <span className="text-green-600">In Stock</span>
+                    <span className="text-green-600">{t('product.inStock')}</span>
                   )}
                 </span>
               ) : (
@@ -159,12 +185,12 @@ const ProductDetail = () => {
               </TabsList>
               <TabsContent value="details" className="pt-4">
                 <p className="text-muted-foreground">
-                  {product.description}
+                  {getLocalizedText('description')}
                 </p>
               </TabsContent>
               <TabsContent value="ingredients" className="pt-4">
                 <p className="text-muted-foreground">
-                  {product.ingredients}
+                  {getLocalizedText('ingredients')}
                 </p>
               </TabsContent>
             </Tabs>
