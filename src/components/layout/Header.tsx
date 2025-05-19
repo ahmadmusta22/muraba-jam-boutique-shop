@@ -1,17 +1,19 @@
-
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useCart } from '@/contexts/CartContext';
-import { Menu, X, ShoppingCart, Search, Globe, ChevronDown } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { Menu, X, ShoppingCart, Search, Globe, ChevronDown, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 const Header = () => {
   const { t, language, setLanguage } = useLanguage();
   const { itemCount } = useCart();
+  const { currentUser, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const navigate = useNavigate();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -23,6 +25,11 @@ const Header = () => {
     if (isMenuOpen) setIsMenuOpen(false);
   };
 
+  const handleSignOut = async () => {
+    await logout();
+    navigate('/');
+  };
+
   return (
     <header className="bg-white shadow-sm sticky top-0 z-40">
       <div className="container-custom">
@@ -30,6 +37,7 @@ const Header = () => {
           {/* Logo */}
           <div className="flex-shrink-0">
             <Link to="/" className="flex items-center">
+              <img src="/logo.png" alt="Muraba Logo" className="h-10 w-auto mr-2" />
               <span className="font-serif text-2xl font-bold text-primary">Muraba</span>
             </Link>
           </div>
@@ -102,6 +110,22 @@ const Header = () => {
                 </span>
               )}
             </Link>
+
+            {/* Auth Buttons */}
+            {!currentUser ? (
+              <>
+                <Link to="/signin">
+                  <Button variant="outline" size="sm" className="ml-2">{t('nav.login')}</Button>
+                </Link>
+                <Link to="/signup">
+                  <Button variant="default" size="sm" className="ml-2">{t('nav.signup')}</Button>
+                </Link>
+              </>
+            ) : (
+              <Button variant="outline" size="sm" className="ml-2" onClick={handleSignOut}>
+                <LogOut size={16} className="mr-2" /> {t('account.logout')}
+              </Button>
+            )}
 
             {/* Mobile menu button */}
             <button

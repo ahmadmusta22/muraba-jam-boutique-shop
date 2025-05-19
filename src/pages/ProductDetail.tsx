@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useCart } from '@/contexts/CartContext';
@@ -11,29 +10,60 @@ import { toast } from '@/components/ui/sonner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProductGrid from '@/components/products/ProductGrid';
 import { LocalizedProduct } from '@/data/products';
+import { getProduct, Product } from '@/lib/firestore';
+import { useToast } from '@/components/ui/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
   const { t, dir, language } = useLanguage();
   const { addItem } = useCart();
-  const [product, setProduct] = useState(id ? getProductById(id) : null);
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [relatedProducts, setRelatedProducts] = useState([]);
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const { currentUser } = useAuth();
 
   useEffect(() => {
-    if (id) {
-      const foundProduct = getProductById(id);
-      setProduct(foundProduct);
-      
-      if (foundProduct) {
-        // Find related products from same category, excluding current product
-        const related = products
-          .filter(p => p.category === foundProduct.category && p.id !== foundProduct.id)
-          .slice(0, 4);
-        setRelatedProducts(related);
-      }
-    }
+    fetchProduct();
   }, [id]);
+
+  const fetchProduct = async () => {
+    if (!id) return;
+    
+    try {
+      const data = await getProduct(id);
+      if (data) {
+        setProduct(data);
+        
+        if (data) {
+          // Find related products from same category, excluding current product
+          const related = products
+            .filter(p => p.category === data.category && p.id !== data.id)
+            .slice(0, 4);
+          setRelatedProducts(related);
+        }
+      } else {
+        toast({
+          title: 'Error',
+          description: 'Product not found',
+          variant: 'destructive',
+        });
+        navigate('/shop');
+      }
+    } catch (error) {
+      console.error('Error fetching product:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to load product',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleQuantityChange = (amount: number) => {
     const newQuantity = Math.max(1, Math.min(quantity + amount, product?.stock || 1));
@@ -41,10 +71,24 @@ const ProductDetail = () => {
   };
 
   const handleAddToCart = () => {
-    if (product) {
-      addItem(product, quantity);
-      toast.success(`${quantity} × ${getLocalizedText('name')} ${t('product.addedToCart')}`);
+    if (!product) return;
+    if (!currentUser) {
+      toast.error(t('nav.login') + ' required to add to cart');
+      return;
     }
+    if (quantity > product.stock) {
+      toast({
+        title: 'Error',
+        description: 'Not enough stock available',
+        variant: 'destructive',
+      });
+      return;
+    }
+    addItem(product, quantity);
+    toast({
+      title: 'Success',
+      description: 'Product added to cart',
+    });
   };
 
   // Function to get localized text
@@ -71,6 +115,27 @@ const ProductDetail = () => {
     
     return product[field];
   };
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="container-custom py-12 text-center">
+          <div className="animate-pulse">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="bg-gray-200 h-96 rounded-lg"></div>
+              <div className="space-y-4">
+                <div className="h-8 bg-gray-200 rounded w-3/4"></div>
+                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                <div className="h-4 bg-gray-200 rounded w-full"></div>
+                <div className="h-4 bg-gray-200 rounded w-full"></div>
+                <div className="h-10 bg-gray-200 rounded w-1/3"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   if (!product) {
     return (

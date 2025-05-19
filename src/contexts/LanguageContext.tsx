@@ -140,6 +140,18 @@ const translations: Record<Language, Record<string, string>> = {
     'footer.newsletter': 'Subscribe to our newsletter',
     'footer.subscribe': 'Subscribe',
     'footer.rights': '© 2025 Muraba. All rights reserved.',
+    
+    // Shop page
+    'shop.title': 'Shop',
+    'shop.searchPlaceholder': 'Search products...',
+    'shop.allCategories': 'All Categories',
+    'shop.sortBy': 'Sort by',
+    'shop.sortByPrice': 'Price',
+    'shop.sortByName': 'Name',
+    'shop.sortByNewest': 'Newest',
+    'shop.noProducts': 'No products found',
+    'shop.tryAdjustingFilters': 'Try adjusting your search or filters',
+    'shop.inStock': 'in stock',
   },
   fr: {
     // Navigation
@@ -270,6 +282,18 @@ const translations: Record<Language, Record<string, string>> = {
     'footer.newsletter': 'Abonnez-vous à notre newsletter',
     'footer.subscribe': 'Souscrire',
     'footer.rights': '© 2025 Muraba. Tous droits réservés.',
+    
+    // Shop page
+    'shop.title': 'Boutique',
+    'shop.searchPlaceholder': 'Rechercher des produits...',
+    'shop.allCategories': 'Toutes les catégories',
+    'shop.sortBy': 'Trier par',
+    'shop.sortByPrice': 'Prix',
+    'shop.sortByName': 'Nom',
+    'shop.sortByNewest': 'Plus récent',
+    'shop.noProducts': 'Aucun produit trouvé',
+    'shop.tryAdjustingFilters': 'Essayez d\'ajuster votre recherche ou vos filtres',
+    'shop.inStock': 'en stock',
   },
   ar: {
     // Navigation
@@ -400,6 +424,18 @@ const translations: Record<Language, Record<string, string>> = {
     'footer.newsletter': 'اشترك في نشرتنا الإخبارية',
     'footer.subscribe': 'اشترك',
     'footer.rights': '© ٢٠٢٥ مربى. جميع الحقوق محفوظة.',
+    
+    // Shop page
+    'shop.title': 'المتجر',
+    'shop.searchPlaceholder': 'ابحث عن منتجات...',
+    'shop.allCategories': 'جميع الفئات',
+    'shop.sortBy': 'ترتيب حسب',
+    'shop.sortByPrice': 'السعر',
+    'shop.sortByName': 'الاسم',
+    'shop.sortByNewest': 'الأحدث',
+    'shop.noProducts': 'لم يتم العثور على منتجات',
+    'shop.tryAdjustingFilters': 'حاول تعديل البحث أو الفلاتر',
+    'shop.inStock': 'متوفر',
   },
 };
 

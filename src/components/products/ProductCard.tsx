@@ -1,8 +1,8 @@
-
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useCart } from '@/contexts/CartContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { Product } from '@/contexts/CartContext';
 import { ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -16,6 +16,8 @@ interface ProductCardProps {
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { t, language } = useLanguage();
   const { addItem } = useCart();
+  const { currentUser } = useAuth();
+  const navigate = useNavigate();
 
   // Function to get localized text
   const getLocalizedText = (field: 'name' | 'category' | 'description') => {
@@ -39,6 +41,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    if (!currentUser) {
+      toast.error(t('nav.login') + ' required to add to cart');
+      return;
+    }
     addItem(product, 1);
     toast.success(`${getLocalizedText('name')} ${t('product.addedToCart')}`);
   };
@@ -59,6 +65,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               variant="secondary"
               className="rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
               disabled={product.stock <= 0}
+              title={!currentUser ? t('nav.login') + ' required' : ''}
             >
               <ShoppingCart size={18} />
             </Button>

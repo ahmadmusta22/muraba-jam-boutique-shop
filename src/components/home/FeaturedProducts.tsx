@@ -1,16 +1,21 @@
-
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Link } from 'react-router-dom';
 import ProductGrid from '../products/ProductGrid';
-import { products } from '@/data/products';
+import { getProducts, Product } from '@/lib/firestore';
 import { ArrowRight } from 'lucide-react';
 
 const FeaturedProducts = () => {
   const { t, dir } = useLanguage();
-  
-  // Get 4 featured products (in a real app, you might have a "featured" flag)
-  const featuredProducts = products.slice(0, 4);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getProducts().then(products => {
+      setProducts(products);
+      setLoading(false);
+    });
+  }, []);
 
   return (
     <section className="py-16">
@@ -27,8 +32,19 @@ const FeaturedProducts = () => {
             <ArrowRight size={16} className={`ml-1 rtl-mirror ${dir === 'rtl' ? 'rotate-180' : ''}`} />
           </Link>
         </div>
-        
-        <ProductGrid products={featuredProducts} />
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="animate-pulse">
+                <div className="bg-gray-200 h-48 rounded-lg mb-4"></div>
+                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <ProductGrid products={products} />
+        )}
       </div>
     </section>
   );
